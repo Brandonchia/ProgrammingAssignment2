@@ -1,23 +1,65 @@
+# The function makeCacheMatrix creates a special matrix 
+# containing the function to set and get the value of 
+# the matrix and its inverse matrix
 makeCacheMatrix <- function(x = matrix()){
         m <- NULL
+        # Set the value of the matrix
         set <- function(y) {
                 x <<- y
                 m <<- NULL
         }
+        # Get the value of the matrix
         get <- function() x     
+        # Set the value of the inverse matrix
         setinverse <- function(inverse) m <<- inverse
+        # Get the value of the inverse matrix
         getinverse <- function() m
         list(set = set,get = get, setinverse = setinverse, 
              getinverse = getinverse)
 }
+# The function cacheSolve computes the inverse of the 
+# special matrix returned by makeCacheMatrix above.
 cacheSolve <- function(x,...){
         m <- x$getinverse()
+        # If the inverse has already been calculated,
+        # the cachesolve should retrieve the inverse from 
+        # the cache
         if(!is.null(m)){
                 message("getting cached result")
                 return(m)
         }
+        # If not, calculate it with function solve, and store 
+        # the inverse into cache. 
         matr <- x$get()
         m <- solve(matr)
         x$setinverse(m)
         m
 }
+
+## Sample run:
+
+## > x <- matrix(1:4,2,2)
+## > m <- makeCacheMatrix(x)
+## > cacheSolve(m)
+##      [,1] [,2]
+## [1,]   -2  1.5
+## [2,]    1 -0.5
+## > cacheSolve(m)
+## getting cached result
+##       [,1] [,2]
+## [1,]   -2  1.5
+## [2,]    1 -0.5
+
+## > x <- matrix(c(1,2,3,4,5,6,8,9,7),3,3)
+## > m <- makeCacheMatrix(x)
+## > cacheSolve(m)
+##          [,1]       [,2]       [,3]
+## [1,] -2.1111111  2.2222222 -0.4444444
+## [2,]  1.4444444 -1.8888889  0.7777778
+## [3,] -0.3333333  0.6666667 -0.3333333
+## > cacheSolve(m)
+## getting cached result
+##          [,1]       [,2]       [,3]
+## [1,] -2.1111111  2.2222222 -0.4444444
+## [2,]  1.4444444 -1.8888889  0.7777778
+## [3,] -0.3333333  0.6666667 -0.3333333
